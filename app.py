@@ -1,4 +1,4 @@
-import streamlit as st, subprocess, tempfile, os
+import streamlit as st, subprocess, tempfile, os, glob
 
 def rodar(cmd):
     subprocess.run(cmd, check=True, capture_output=True)
@@ -23,7 +23,13 @@ def preparar(ent, sai, p, d, i):
            "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", sai])
 
 st.set_page_config(page_title="Nosso Pintor - Editor", page_icon="🎨")
-st.markdown(" 🎨 Nosso "
+
+logos = [x for x in glob.glob("*") if x.lower().endswith((".png", ".jpg", ".jpeg"))]
+if logos:
+    c1, c2, c3 = st.columns([1, 2, 1])
+    with c2:
+        st.image(logos[0], use_container_width=True)
+st.markdown(" Nosso "
             "Pintor "
             " Editor de Reels ",
             unsafe_allow_html=True)
@@ -68,7 +74,6 @@ if videos and st.button("Editar", use_container_width=True):
             cmd += ["-filter_complex", fc, "-map", "[out]"]
             if musica:
                 cmd += ["-map", "1:a", "-c:a", "aac", "-shortest"]
-            dur = "".join(ch for ch in p.split("s")[0][-3:] if ch.isdigit()) if "s" in p else ""
             for palavra in p.replace(",", " ").split():
                 if palavra.endswith("s") and palavra[:-1].isdigit():
                     cmd += ["-t", palavra[:-1]]
